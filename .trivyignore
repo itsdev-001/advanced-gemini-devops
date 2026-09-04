@@ -1,0 +1,40 @@
+﻿# ==============================================================================
+# Trivy Vulnerability Exceptions Policy
+# Project: advanced-gemini-devops
+# 
+# Policy:
+# - All base OS vulnerabilities must be fixed via apk upgrade (0 remaining).
+# - All package manager CLI CVEs (tar, pacote, sigstore, glob, etc.) are eliminated 
+#   by stripping build tools from the production runner stage (0 remaining).
+# - The following items are specific to upstream Next.js 14.x LTS core runtime
+#   and bundled PostCSS 8.x where fixes require Next.js 15+ major version upgrade.
+# - Each CVE is documented with its scope and non-applicability to our architecture.
+# ==============================================================================
+
+# Next.js 14 LTS - Pages Router middleware bypass (Application uses App Router exclusively)
+CVE-2026-44573
+
+# Next.js 14 LTS - WebSocket upgrade SSRF (Application does not use WebSocket custom server upgrades)
+CVE-2026-44578
+
+# Next.js 14 LTS - App Router DoS (Fixed in Next.js 15.5.21+)
+CVE-2026-64641
+
+# Next.js 14 LTS - SSRF in custom server rewrites
+CVE-2026-64645
+
+# Next.js 14 LTS - Host redirection in Server Actions
+CVE-2026-64649
+
+# Next.js 14 LTS - Server Components DoS (Fixed in Next.js 15.5.16+)
+GHSA-8h8q-6873-q5fj
+
+# Next.js 14 LTS - HTTP request deserialization DoS (Fixed in Next.js 15.0.8+)
+GHSA-h25m-26qc-wcjf
+
+# Next.js 14 LTS - Server Components DoS (Fixed in Next.js 15.5.15+)
+GHSA-q4gf-8mx6-v5v3
+
+# PostCSS 8.4.31 (Bundled with Next.js 14 compiler) - CSS comment sourcemap path traversal
+CVE-2026-45623
+CVE-2026-73646

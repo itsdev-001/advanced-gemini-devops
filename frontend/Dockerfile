@@ -44,6 +44,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
+# Apply latest Alpine security patches and remove unnecessary global package managers
+RUN apk upgrade --no-cache && \
+    rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /root/.npm /root/.cache
+
 # Create non-root system group and user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs

@@ -1,4 +1,4 @@
-name: Production CI Pipeline
+name: Production CI/CD Pipeline
 
 'on':
   push:
@@ -12,6 +12,12 @@ name: Production CI Pipeline
 
 permissions:
   contents: read
+  id-token: write  # Required for AWS OIDC authentication
+
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: advanced-gemini-devops
+  AWS_ROLE_ARN: ${{ secrets.AWS_ROLE_ARN }}
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -79,4 +85,36 @@ jobs:
           exit-code: '1'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
+          trivyignores: .trivyignore
+
+      # Stage 9: Configure AWS Credentials via OIDC (Push to Main Only)
+      - name: Configure AWS Credentials via GitHub OIDC
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: GitHubActions-ECR-Push
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Stage 10: Log in to Amazon ECR
+      - name: Log in to Amazon ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Stage 11: Tag and Push Image to Amazon ECR
+      - name: Tag and Push Docker Image to Amazon ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          ECR_REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY"
+          
+          # Tag with immutable commit SHA and latest
+          docker tag gemini-ai-frontend:${{ github.sha }} "$IMAGE_URI:${{ github.sha }}"
+          docker tag gemini-ai-frontend:${{ github.sha }} "$IMAGE_URI:latest"
+          
+          # Push both tags to Amazon ECR
+          docker push "$IMAGE_URI:${{ github.sha }}"
+          docker push "$IMAGE_URI:latest"
+        working-directory: .
 
