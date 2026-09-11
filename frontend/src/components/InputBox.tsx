@@ -131,7 +131,7 @@ export default function InputBox({ onSendMessage, isStreaming, onStopStream }: I
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             rows={1}
-            placeholder="Ask Gemini anything or explore cloud architectures..."
+            placeholder="Ask Gemini about Kubernetes, AWS, Terraform, Docker, or any DevOps challenge..."
             className="flex-1 bg-transparent text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none resize-none max-h-44 py-1.5 px-1 leading-relaxed"
           />
 
@@ -164,7 +164,7 @@ export default function InputBox({ onSendMessage, isStreaming, onStopStream }: I
         </div>
       </form>
       <div className="text-center mt-2 text-[11px] text-gray-400 dark:text-gray-500">
-        Gemini AI Enterprise Edition — Server-side API Gateway
+        Gemini AI Enterprise Edition — Direct Google AI Gateway
       </div>
     </div>
   );

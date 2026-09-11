@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: advanced-gemini-config
+  namespace: advanced-gemini
+  labels:
+    app.kubernetes.io/name: advanced-gemini
+    app.kubernetes.io/part-of: advanced-gemini-devops
+    environment: production
+data:
+  APP_NAME: "advanced-gemini-devops"
+  NODE_ENV: "production"
+  DEFAULT_MODEL: "gemini-3.6-flash"
+  NEXT_TELEMETRY_DISABLED: "1"
+  PORT: "3000"
+  HOSTNAME: "0.0.0.0"
+

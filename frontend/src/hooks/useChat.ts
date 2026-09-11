@@ -4,12 +4,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { ChatSession, ChatMessage } from '@/types/chat';
 import { loadStoredSessions, saveStoredSessions, loadStoredModel, saveStoredModel } from '@/utils/storage';
 import { truncateText } from '@/utils/formatters';
-import { streamChat } from '@/services/api';
+import { streamChat, extractErrorMessage } from '@/services/api';
 
 export function useChat() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
-  const [selectedModel, setSelectedModel] = useState<string>('gemini-2.5-flash');
+  const [selectedModel, setSelectedModel] = useState<string>('gemini-3.6-flash');
   const [isStreaming, setIsStreaming] = useState<boolean>(false);
   const [errorState, setErrorState] = useState<string | null>(null);
   const [mounted, setMounted] = useState<boolean>(false);
@@ -19,7 +19,7 @@ export function useChat() {
   // Initialize from storage on mount
   useEffect(() => {
     const stored = loadStoredSessions();
-    const storedModel = loadStoredModel('gemini-2.5-flash');
+    const storedModel = loadStoredModel('gemini-3.6-flash');
     setSessions(stored);
     setSelectedModel(storedModel);
     if (stored.length > 0) {
@@ -218,7 +218,8 @@ export function useChat() {
         );
       },
       onError: (err) => {
-        setErrorState(err.message);
+        const safeErrorMsg = extractErrorMessage(err);
+        setErrorState(safeErrorMsg);
         setSessions((prev) =>
           prev.map((s) => {
             if (s.id === currentId) {
@@ -230,7 +231,7 @@ export function useChat() {
                       ...m,
                       isStreaming: false,
                       isError: true,
-                      content: m.content || `⚠️ Error: ${err.message}`
+                      content: m.content || `⚠️ Error: ${safeErrorMsg}`
                     };
                   }
                   return m;

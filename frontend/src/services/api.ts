@@ -1,19 +1,77 @@
-import { GeminiModelInfo, ChatMessage } from '@/types/chat';
+import { ModelInfo, ChatMessage } from '@/types/chat';
 
-export async function fetchModels(): Promise<GeminiModelInfo[]> {
+export interface ModelsResponse {
+  models: ModelInfo[];
+  defaultModel: string;
+}
+
+export function extractErrorMessage(err: unknown): string {
+  if (typeof err === 'string') return err;
+  if (!err) return 'Unknown error';
+  if (err instanceof Error && typeof err.message === 'string') return err.message;
+  if (typeof err === 'object') {
+    const record = err as Record<string, any>;
+    if (typeof record.error === 'string') return record.error;
+    if (typeof record.error?.message === 'string') return record.error.message;
+    if (typeof record.message === 'string') return record.message;
+    try {
+      return JSON.stringify(err);
+    } catch {
+      return 'Unexpected error';
+    }
+  }
+  return String(err);
+}
+
+export async function fetchModelsData(): Promise<ModelsResponse> {
   try {
     const res = await fetch('/api/models');
-    if (!res.ok) throw new Error('Failed to fetch models');
+    if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch models`);
     const json = await res.json();
-    return json.data || [];
+    return {
+      models: json.data || [],
+      defaultModel: json.defaultModel || 'gemini-3.6-flash'
+    };
   } catch (error) {
-    console.warn('[API Service] Failed to load models from server, using fallback:', error);
-    return [
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', description: 'Fast, high-efficiency model', recommended: true },
-      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', description: 'Ultra-low latency general purpose' },
-      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', description: 'Complex reasoning and code generation' }
-    ];
+    const safeMsg = extractErrorMessage(error);
+    console.warn('[API Service] Failed to load models from server, using fallback:', safeMsg);
+    return {
+      models: [
+        {
+          id: 'gemini-3.6-flash',
+          name: 'Gemini 3.6 Flash',
+          description: 'Google next-gen flagship model for speed, code generation, and complex DevOps reasoning.',
+          recommended: true
+        },
+        {
+          id: 'gemini-2.5-pro',
+          name: 'Gemini 2.5 Pro',
+          description: 'State-of-the-art reasoning model for intricate architectural design and deep troubleshooting.'
+        },
+        {
+          id: 'gemini-2.0-flash',
+          name: 'Gemini 2.0 Flash',
+          description: 'High-speed multimodal intelligence with sub-second response times.'
+        },
+        {
+          id: 'gemini-1.5-flash',
+          name: 'Gemini 1.5 Flash',
+          description: 'Lightweight, ultra-fast model ideal for high-throughput daily DevOps workflows.'
+        },
+        {
+          id: 'gemini-1.5-pro',
+          name: 'Gemini 1.5 Pro',
+          description: 'Massive 2M token context window capable of ingesting entire codebases and log repositories.'
+        }
+      ],
+      defaultModel: 'gemini-3.6-flash'
+    };
   }
+}
+
+export async function fetchModels(): Promise<ModelInfo[]> {
+  const data = await fetchModelsData();
+  return data.models;
 }
 
 export interface StreamChatOptions {
@@ -31,7 +89,7 @@ export interface StreamChatOptions {
 export async function streamChat({
   prompt,
   history = [],
-  model = 'gemini-2.5-flash',
+  model = 'gemini-3.6-flash',
   imageBase64,
   imageMimeType,
   signal,
@@ -59,9 +117,8 @@ export async function streamChat({
       let errorMessage = `Server error (${response.status})`;
       try {
         const errorJson = await response.json();
-        if (errorJson.error) errorMessage = errorJson.error;
+        errorMessage = extractErrorMessage(errorJson);
       } catch {
-        // use fallback statusText
         errorMessage = response.statusText || errorMessage;
       }
       throw new Error(errorMessage);
@@ -95,7 +152,7 @@ export async function streamChat({
 
         try {
           const parsed = JSON.parse(payload);
-          if (parsed.text) {
+          if (parsed && typeof parsed.text === 'string') {
             onChunk(parsed.text);
           }
         } catch {
@@ -106,12 +163,13 @@ export async function streamChat({
 
     onDone();
   } catch (err: any) {
-    if (err.name === 'AbortError') {
+    if (err && err.name === 'AbortError') {
       console.log('[API Service] Stream aborted by user');
       onDone();
     } else {
-      console.error('[API Service] Chat request error:', err);
-      onError(err instanceof Error ? err : new Error(String(err)));
+      const safeMsg = extractErrorMessage(err);
+      console.error('[API Service] Chat request error:', safeMsg);
+      onError(err instanceof Error ? err : new Error(safeMsg));
     }
   }
 }

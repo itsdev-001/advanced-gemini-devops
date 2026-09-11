@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: advanced-gemini
+  labels:
+    name: advanced-gemini
+    environment: production
+    managed-by: kubernetes
+

@@ -1,4 +1,4 @@
-export type MessageRole = 'user' | 'model';
+﻿export type MessageRole = 'user' | 'model';
 
 export interface ChatMessage {
   id: string;
@@ -23,13 +23,16 @@ export interface ChatSession {
   messages: ChatMessage[];
 }
 
-export interface GeminiModelInfo {
+export interface ModelInfo {
   id: string;
   name: string;
   description: string;
   recommended?: boolean;
   contextWindow?: string;
 }
+
+/** @deprecated Use ModelInfo instead */
+export type GeminiModelInfo = ModelInfo;
 
 export interface StreamChunkPayload {
   text: string;

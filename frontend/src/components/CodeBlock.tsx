@@ -6,9 +6,10 @@ import { Check, Copy } from 'lucide-react';
 interface CodeBlockProps {
   language: string;
   value: string;
+  children?: React.ReactNode;
 }
 
-export default function CodeBlock({ language, value }: CodeBlockProps) {
+export default function CodeBlock({ language, value, children }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -50,7 +51,7 @@ export default function CodeBlock({ language, value }: CodeBlockProps) {
       {/* Code Body */}
       <div className="p-4 overflow-x-auto font-mono text-[13px] leading-relaxed">
         <pre className="!bg-transparent !p-0 !m-0">
-          <code>{value}</code>
+          <code>{children || value}</code>
         </pre>
       </div>
     </div>

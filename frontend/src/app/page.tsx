@@ -7,8 +7,8 @@ import ChatArea from '@/components/ChatArea';
 import InputBox from '@/components/InputBox';
 import { useChat } from '@/hooks/useChat';
 import { useTheme } from '@/hooks/useTheme';
-import { fetchModels } from '@/services/api';
-import { GeminiModelInfo } from '@/types/chat';
+import { fetchModelsData } from '@/services/api';
+import { ModelInfo } from '@/types/chat';
 
 export default function HomePage() {
   const {
@@ -33,17 +33,20 @@ export default function HomePage() {
 
   const { theme, toggleTheme } = useTheme();
 
-  const [models, setModels] = useState<GeminiModelInfo[]>([]);
+  const [models, setModels] = useState<ModelInfo[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Load supported models from server on mount
+  // Load supported models from server on mount and enforce modern default
   useEffect(() => {
     async function loadModels() {
-      const serverModels = await fetchModels();
+      const { models: serverModels, defaultModel } = await fetchModelsData();
       setModels(serverModels);
+      if (!selectedModel || !selectedModel.startsWith('gemini-') || selectedModel === 'gemini-2.5-flash') {
+        setSelectedModel(defaultModel || 'gemini-3.6-flash');
+      }
     }
     loadModels();
-  }, []);
+  }, [selectedModel, setSelectedModel]);
 
   return (
     <div className="flex h-screen w-screen bg-gray-50 dark:bg-[#131314] text-gray-900 dark:text-gray-100 overflow-hidden font-sans">

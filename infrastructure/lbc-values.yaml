@@ -1,0 +1,9 @@
+clusterName: advanced-gemini-devops-production
+serviceAccount:
+  create: true
+  name: aws-load-balancer-controller
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::552916920151:role/advanced-gemini-devops-production-aws-load-balancer-controller
+region: ap-south-1
+vpcId: vpc-0ac196e12a7bf1509
+

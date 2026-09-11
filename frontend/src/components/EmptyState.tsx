@@ -37,7 +37,7 @@ export default function EmptyState({ onSelectPrompt }: EmptyStateProps) {
       <div className="space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-indigo-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 text-xs font-semibold tracking-wide uppercase">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Advanced Gemini AI Platform</span>
+          <span>Google Gemini DevOps AI Platform</span>
         </div>
         <h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
           Hello, DevOps Engineer

@@ -1,0 +1,15 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: advanced-gemini
+  namespace: advanced-gemini
+  labels:
+    app.kubernetes.io/name: advanced-gemini
+    app.kubernetes.io/part-of: advanced-gemini-devops
+    environment: production
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: advanced-gemini
+

@@ -8,7 +8,7 @@ export async function GET() {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
-      service: 'gemini-ai-frontend',
+      service: 'devops-ai-frontend',
       version: '1.0.0'
     },
     { status: 200 }

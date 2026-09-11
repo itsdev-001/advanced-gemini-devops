@@ -1,0 +1,10 @@
+apiVersion: v2
+name: advanced-gemini
+description: Production-grade Helm chart for Advanced Gemini DevOps AI Platform on Amazon EKS
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+maintainers:
+  - name: DevOps Engineering Team
+    email: devops@example.com
+

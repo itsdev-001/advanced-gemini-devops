@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Gemini AI — Enterprise DevOps Edition',
-  description: 'Production-grade Gemini AI chat platform with server-side streaming API gateway.',
+  description: 'Production-grade Gemini AI chat platform powered directly by Google Gemini with server-side streaming API gateway.',
   icons: {
     icon: '/gemini-icon.svg'
   }

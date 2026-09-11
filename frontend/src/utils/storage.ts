@@ -10,7 +10,11 @@ export function loadStoredSessions(): ChatSession[] {
     const raw = localStorage.getItem(SESSIONS_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((s: ChatSession) => ({
+      ...s,
+      model: s.model === 'gemini-1.5-pro' || s.model === 'gemini-2.5-flash' || !s.model ? 'gemini-3.6-flash' : s.model
+    }));
   } catch (error) {
     console.error('[Storage] Failed to load chat sessions:', error);
     return [];
@@ -45,10 +49,16 @@ export function saveStoredTheme(theme: 'dark' | 'light'): void {
   }
 }
 
-export function loadStoredModel(defaultModel: string = 'gemini-2.5-flash'): string {
+export function loadStoredModel(defaultModel: string = 'gemini-3.6-flash'): string {
   if (typeof window === 'undefined') return defaultModel;
   try {
-    return localStorage.getItem(MODEL_STORAGE_KEY) || defaultModel;
+    const stored = localStorage.getItem(MODEL_STORAGE_KEY);
+    // Automatically migrate legacy models (gemini-2.5-flash, gemini-1.5-pro) to gemini-3.6-flash
+    if (!stored || stored === 'gemini-1.5-pro' || stored === 'gemini-2.5-flash' || stored.startsWith('openrouter/')) {
+      localStorage.setItem(MODEL_STORAGE_KEY, defaultModel);
+      return defaultModel;
+    }
+    return stored;
   } catch {
     return defaultModel;
   }

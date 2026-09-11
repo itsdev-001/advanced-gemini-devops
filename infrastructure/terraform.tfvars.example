@@ -1,0 +1,39 @@
+# ==============================================================================
+# Sample Terraform Configuration Variables
+# Environment: Production Demo / Portfolio
+# Region: ap-south-1 (Mumbai)
+# Note: Copy this file to terraform.tfvars to customize your deployment.
+# NEVER commit real credentials, API tokens, or secrets to Git.
+# ==============================================================================
+
+aws_region   = "ap-south-1"
+environment  = "production"
+project_name = "advanced-gemini-devops"
+cluster_name = "advanced-gemini-devops-production"
+
+kubernetes_version = "1.30"
+
+# Networking Configuration
+vpc_cidr            = "10.0.0.0/16"
+availability_zones  = ["ap-south-1a", "ap-south-1b"]
+public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
+
+# Cost-control setting: Single NAT Gateway shared across private subnets
+single_nat_gateway = true
+
+# Compute Configuration (cost-optimized demo sizing)
+node_instance_types = ["t3.medium"]
+node_instance_types = ["c7i-flex.large"]
+node_capacity_type  = "ON_DEMAND"
+node_desired_size   = 2
+node_min_size       = 1
+node_max_size       = 3
+node_disk_size      = 20
+
+# Security & Encryption Configuration
+enable_kms_secrets_encryption = true
+endpoint_public_access        = true
+endpoint_private_access       = true
+public_access_cidrs           = ["0.0.0.0/0"]
+

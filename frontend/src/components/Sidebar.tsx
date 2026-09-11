@@ -104,7 +104,7 @@ export default function Sidebar({
             </div>
             <div>
               <h1 className="font-semibold text-sm leading-tight text-gray-100">Gemini AI</h1>
-              <span className="text-[10px] text-blue-400 font-mono tracking-wider">ENTERPRISE EDITION</span>
+              <span className="text-[10px] text-blue-400 font-mono tracking-wider">GOOGLE GEMINI · ENTERPRISE</span>
             </div>
           </div>
 
