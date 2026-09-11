@@ -87,6 +87,3 @@ jobs:
           severity: 'CRITICAL,HIGH'
           trivyignores: .trivyignore
 
-          docker push "$IMAGE_URI:latest"
-        working-directory: .
-
